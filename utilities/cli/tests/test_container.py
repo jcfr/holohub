@@ -294,6 +294,12 @@ class TestHoloHubContainer(unittest.TestCase):
         mock_run_info_command.return_value = "not.a.version"
         self.assertEqual(get_default_cuda_version(), "13")
 
+    def test_get_devcontainer_args_maps_hostname_to_localhost(self):
+        """Host-network devcontainers need /etc/hosts entry for the UTS hostname (sudo)."""
+        out = self.container.get_devcontainer_args()
+        self.assertIn("--hostname=holohub-test_project", out)
+        self.assertIn("--add-host=holohub-test_project:127.0.0.1", out)
+
 
 if __name__ == "__main__":
     unittest.main()

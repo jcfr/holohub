@@ -970,6 +970,10 @@ class HoloHubContainer:
             f"{self.HOSTNAME_PREFIX}-{project_name}" if project_name else self.HOSTNAME_PREFIX
         )
         docker_args.extend(["--hostname", hostname])
+        # Devcontainers use --net=host by default. Docker does not map the UTS hostname into
+        # /etc/hosts in that mode, so getaddrinfo(gethostname()) fails and sudo prints
+        # "unable to resolve host <hostname>".
+        docker_args.extend(["--add-host", f"{hostname}:127.0.0.1"])
 
         devcontainer_options = docker_args_to_devcontainer_format(docker_args)
         return ",\n        ".join(f'"{opt}"' for opt in devcontainer_options)
